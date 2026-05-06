@@ -337,37 +337,6 @@ Create Room</h1>
 
               </div>
 
-              <div className="flex flex-col gap-1">
-                <label className="font-bold text-sm ml-2">
-                  Room Password (optional)
-                </label>
-
-                <input
-                  className="cartoon-input"
-                  type="password"
-                  placeholder="Leave empty for no password"
-                  value={form.joinPassword}
-                  onChange={(e) =>
-                    setForm({ ...form, joinPassword: e.target.value })
-                  }
-                />
-              </div>
-
-              <label className="flex items-center gap-3 font-bold p-3 bg-[#F5F3FF] rounded-2xl border-2 border-black cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="w-5 h-5 accent-[#7C3AED]"
-                  checked={form.allowRequests}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      allowRequests: e.target.checked
-                    })
-                  }
-                />
-                Public (allow direct join)
-              </label>
-
               <button
                 type="submit"
                 className="cartoon-btn bg-[#16A34A] text-white mt-2"

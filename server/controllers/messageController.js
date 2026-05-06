@@ -203,9 +203,11 @@ export const sendMessage = async (req, res) => {
         })
 
         // Emit socket event for new notification
-        if (receiverSocketId && globalThis.io) {
+        if (receiverSocketIds && globalThis.io) {
             const populatedNotification = await Notification.findById(notification._id).populate("sender","fullName profilePic");
-            globalThis.io.to(receiverSocketId).emit("newNotification", populatedNotification);
+            receiverSocketIds.forEach(socketId => {
+                globalThis.io.to(socketId).emit("newNotification", populatedNotification);
+            });
         }
 
 

@@ -200,7 +200,7 @@ function ChatContainer({ onOpenLeft }) {
       {/* MESSAGES */}
       <div className="flex-1 overflow-y-scroll px-4 py-4 flex flex-col gap-4 messages-area">
         {messages?.map((msg, index) => {
-          const isMe = msg.senderId === authUser?._id;
+          const isMe = String(msg.senderId?._id || msg.senderId) === String(authUser?._id);
 
           // Date separator logic
           const msgDate = new Date(msg.createdAt).toDateString();

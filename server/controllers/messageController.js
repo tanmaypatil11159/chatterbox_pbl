@@ -182,11 +182,18 @@ export const sendMessage = async (req, res) => {
             image: imageUrl,
         });
 
-        // Emit the new message to the receiver's socket (use globalThis set in server)
-        const receiverSocketId = globalThis.userSocketMap && globalThis.userSocketMap[receiverId];
+        // Populate senderId and receiverId before emitting
+        const populatedMessage = await Message.findById(newMessage._id)
+            .populate("senderId", "-password")
+            .populate("receiverId", "-password");
 
-        if (receiverSocketId && globalThis.io) {
-            globalThis.io.to(receiverSocketId).emit("newMessage", newMessage);
+        // Emit the new message to all receiver's sockets (use globalThis set in server)
+        const receiverSocketIds = globalThis.userSocketMap && globalThis.userSocketMap[receiverId];
+
+        if (receiverSocketIds && globalThis.io) {
+            receiverSocketIds.forEach(socketId => {
+                globalThis.io.to(socketId).emit("newMessage", populatedMessage);
+            });
         }
 
         const notification = await Notification.create({
@@ -204,7 +211,7 @@ export const sendMessage = async (req, res) => {
 
         res.status(201).json({
             success: true,
-            newMessage,
+            newMessage: populatedMessage,
         });
 
     } catch (error) {

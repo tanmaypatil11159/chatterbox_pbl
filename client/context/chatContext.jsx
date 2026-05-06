@@ -189,54 +189,59 @@ export const ChatProvider = ({ children }) => {
   };
 
   // subscribe to socket messages
-  const subscribeToMessages = () => {
+  useEffect(() => {
     if (!socket) return;
 
-    socket.on("newMessage", (newMessage) => {
+    const handleNewMessage = (newMessage) => {
       if (!newMessage) return;
-      if (selectedUser && newMessage.senderId === selectedUser._id) {
+      
+      // Get sender ID as string (handle both object and string cases)
+      const senderIdStr = String(newMessage.senderId?._id || newMessage.senderId);
+      
+      if (selectedUser && senderIdStr === String(selectedUser._id)) {
         newMessage.seen = true;
 
-        setMessages((prev) => [...prev, newMessage]);
+        setMessages((prev) => {
+          // Check for duplicates
+          const isDuplicate = prev.some(m => String(m._id) === String(newMessage._id));
+          if (isDuplicate) return prev;
+          return [...prev, newMessage];
+        });
         axios.put(`/api/messages/mark/${newMessage._id}`);
       } else {
         setUnseenMessages((prev) => ({
           ...prev,
-          [newMessage.senderId]: prev[newMessage.senderId]
-            ? prev[newMessage.senderId] + 1
+          [senderIdStr]: prev[senderIdStr]
+            ? prev[senderIdStr] + 1
             : 1,
         }));
       }
-    });
+    };
 
-    socket.on("messageDeletedForMe", (messageId) => {
-      setMessages((prev) => prev.filter((msg) => msg._id !== messageId));
-    });
+    const handleMessageDeletedForMe = (messageId) => {
+      setMessages((prev) => prev.filter((msg) => String(msg._id) !== String(messageId)));
+    };
 
-    socket.on("messageDeletedForEveryone", ({ id }) => {
+    const handleMessageDeletedForEveryone = ({ id }) => {
       setMessages((prev) =>
         prev.map((msg) =>
-          msg._id === id
+          String(msg._id) === String(id)
             ? { ...msg, isDeletedForEveryone: true, text: "", image: "" }
             : msg
         )
       );
-    });
-  };
+    };
 
-  // unsubscribe from socket messages
-  const unsubscribeFromMessages = () => {
-    if (socket) {
-      socket.off("newMessage");
-      socket.off("messageDeletedForMe");
-      socket.off("messageDeletedForEveryone");
-    }
-  };
+    socket.on("newMessage", handleNewMessage);
+    socket.on("messageDeletedForMe", handleMessageDeletedForMe);
+    socket.on("messageDeletedForEveryone", handleMessageDeletedForEveryone);
 
-  useEffect(() => {
-    subscribeToMessages();
-    return () => unsubscribeFromMessages();
-  }, [socket, selectedUser]);
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.off("messageDeletedForMe", handleMessageDeletedForMe);
+      socket.off("messageDeletedForEveryone", handleMessageDeletedForEveryone);
+    };
+  }, [socket, selectedUser, axios]);
 
   // Load users when component mounts and when socket connects
   useEffect(() => {

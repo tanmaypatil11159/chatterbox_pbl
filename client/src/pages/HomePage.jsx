@@ -24,7 +24,7 @@ function HomePage() {
   return (
     <div className="h-full overflow-hidden relative bg-[var(--bg)] text-[var(--text)]">
       <div
-        className={`h-full w-full grid box-border transition-all duration-300 overflow-hidden
+        className={`h-full grid box-border transition-all duration-300
           grid-cols-1
           ${!selectedUser ? "md:grid-cols-2" : "md:grid-cols-[1fr_2fr]"}
           ${selectedUser && isRightSidebarOpen ? "xl:grid-cols-[1fr_2fr_300px]" : ""}
@@ -32,12 +32,12 @@ function HomePage() {
         >
         
         {/* SIDEBAR (Friends List) */}
-        <div className={`${selectedUser ? "hidden md:flex" : "flex"} flex-col min-h-0 min-w-0 border-r border-[var(--border)]`}>
+        <div className={`${selectedUser ? "hidden md:flex" : "flex"} flex-col min-h-0 border-r border-[var(--border)]`}>
           <Sidebar />
         </div>
 
         {/* CHAT AREA */}
-        <div className={`${selectedUser ? "flex" : "hidden md:flex"} min-h-0 min-w-0 flex flex-col relative`}>
+        <div className={`${selectedUser ? "flex" : "hidden md:flex"} min-h-0 flex flex-col relative`}>
           <ChatContainer 
             onOpenLeft={() => setSelectedUser(null)}
             onOpenRight={() => { setShowMobileRight(true); setShowMobileLeft(false); }}
@@ -46,7 +46,7 @@ function HomePage() {
 
         {/* DESKTOP RIGHT SIDEBAR */}
         {selectedUser && isRightSidebarOpen && (
-            <div className="hidden xl:flex flex-col min-h-0 min-w-0 border-l border-[var(--border)]">
+            <div className="hidden xl:flex flex-col min-h-0 border-l border-[var(--border)]">
                 <RightSidebar />
             </div>
         )}

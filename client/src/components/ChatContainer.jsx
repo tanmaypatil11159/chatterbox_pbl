@@ -198,84 +198,167 @@ function ChatContainer({ onOpenLeft }) {
       </div>
 
       {/* MESSAGES */}
-      <div className="flex-1 overflow-y-scroll px-4 py-4 flex flex-col gap-4 messages-area">
-        {messages?.map((msg, index) => {
-          const isMe = String(msg.senderId?._id || msg.senderId) === String(authUser?._id);
+<div className="flex-1 w-full min-w-0 overflow-x-hidden overflow-y-scroll px-4 py-4 flex flex-col gap-4 messages-area">
+  {messages?.map((msg, index) => {
+    const isMe =
+      String(msg.senderId?._id || msg.senderId) ===
+      String(authUser?._id);
 
-          // Date separator logic
-          const msgDate = new Date(msg.createdAt).toDateString();
-          const prevMsgDate = index > 0 ? new Date(messages[index - 1].createdAt).toDateString() : null;
-          const showDateSeparator = msgDate !== prevMsgDate;
+    const msgDate = new Date(msg.createdAt).toDateString();
+    const prevMsgDate =
+      index > 0
+        ? new Date(messages[index - 1].createdAt).toDateString()
+        : null;
 
-          return (
-            <React.Fragment key={msg._id || `${msg.senderId}-${msg.createdAt}`}>
-              {showDateSeparator && (
-                <div className="flex items-center justify-center my-4">
-                  <div className="bg-gray-200 border-2 border-black rounded-full px-4 py-1 text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                    {new Date(msg.createdAt).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                  </div>
-                </div>
-              )}
-              <div className={`max-w-[85%] sm:max-w-[70%] ${isMe ? "ml-auto items-end" : "mr-auto items-start"} flex flex-col group relative`}>
-                
-                {/* TRASH CAN APPLIES TO ALL MESSAGES NOW */}
-                {!msg.isDeletedForEveryone && (
+    const showDateSeparator = msgDate !== prevMsgDate;
+
+    return (
+      <React.Fragment
+        key={msg._id || `${msg.senderId}-${msg.createdAt}`}
+      >
+        {showDateSeparator && (
+          <div className="flex items-center justify-center my-4 w-full">
+            <div className="bg-gray-200 border-2 border-black rounded-full px-4 py-1 text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+              {new Date(msg.createdAt).toLocaleDateString(undefined, {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </div>
+          </div>
+        )}
+
+        <div
+          className={`
+            w-full flex flex-col group relative min-w-0
+            ${isMe ? "items-end" : "items-start"}
+          `}
+        >
+          {!msg.isDeletedForEveryone && (
+            <button
+              onClick={() =>
+                setDeletingMsgId(
+                  deletingMsgId === msg._id ? null : msg._id
+                )
+              }
+              className={`
+                absolute top-1/2 -translate-y-1/2 z-10
+                ${isMe ? "-left-8 sm:-left-10" : "-right-8 sm:-right-10"}
+                p-2 text-red-500 opacity-0
+                group-hover:opacity-100 transition-opacity
+              `}
+              title="Delete message"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
+
+          {deletingMsgId === msg._id &&
+            !msg.isDeletedForEveryone && (
+              <div
+                className={`
+                  absolute top-full mt-1 z-20
+                  ${isMe ? "right-0" : "left-0"}
+                  bg-white border-2 border-black
+                  rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]
+                  p-2 flex flex-col gap-1 w-40
+                `}
+              >
+                <button
+                  onClick={() => {
+                    deleteMessage(msg._id, "forMe");
+                    setDeletingMsgId(null);
+                  }}
+                  className="text-sm font-bold hover:bg-gray-200 p-2 text-left rounded"
+                >
+                  Delete for me
+                </button>
+
+                {isMe && (
                   <button
-                    onClick={() => setDeletingMsgId(deletingMsgId === msg._id ? null : msg._id)}
-                    className={`absolute ${isMe ? "-left-8 sm:-left-10" : "-right-8 sm:-right-10"} top-1/2 -translate-y-1/2 p-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity`}
-                    title="Delete message"
+                    onClick={() => {
+                      deleteMessage(msg._id, "forEveryone");
+                      setDeletingMsgId(null);
+                    }}
+                    className="text-sm font-bold hover:bg-red-100 text-red-600 p-2 text-left rounded"
                   >
-                    <Trash2 size={14} sm:size={16} />
+                    Delete for everyone
                   </button>
                 )}
 
-                {/* DELETE OPTIONS DROPDOWN */}
-                {deletingMsgId === msg._id && !msg.isDeletedForEveryone && (
-                   <div className={`absolute top-full mt-1 ${isMe ? "right-0" : "left-0"} z-20 bg-white border-2 border-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-2 flex flex-col gap-1 w-40 overflow-hidden`}>
-                     <button onClick={() => { deleteMessage(msg._id, "forMe"); setDeletingMsgId(null); }} className="text-sm font-bold hover:bg-gray-200 p-2 text-left w-full rounded">Delete for me</button>
-                     {isMe && <button onClick={() => { deleteMessage(msg._id, "forEveryone"); setDeletingMsgId(null); }} className="text-sm font-bold hover:bg-red-100 text-red-600 p-2 text-left w-full rounded">Delete for everyone</button>}
-                     <button onClick={() => setDeletingMsgId(null)} className="text-sm font-bold hover:bg-gray-100 p-2 text-left w-full rounded text-gray-500">Cancel</button>
-                   </div>
-                )}
-
-                {msg.isDeletedForEveryone ? (
-                   <div
-                     className={`
-                       border-2 sm:border-4 border-black
-                       rounded-2xl sm:rounded-3xl
-                       px-3 py-1.5 sm:px-4 sm:py-2
-                       font-bold text-sm sm:text-base italic text-gray-500
-                       ${isMe ? "rounded-br-none ml-auto bg-gray-100" : "rounded-bl-none mr-auto bg-gray-100"}
-                     `}
-                   >
-                     🚫 This message was deleted
-                   </div>
-                ) : msg.image ? (
-                  <img src={msg.image || `https://api.dicebear.com/9.x/initials/svg?seed=Image&backgroundColor=8B5CF6,4F46E5,EC4899,10B981,F59E0B`} className="max-w-full sm:max-w-[220px] rounded-xl border-2 sm:border-4 border-black" />
-                ) : (
-                  <div
-                    className={`
-                      border-2 sm:border-4 border-black
-                      rounded-2xl sm:rounded-3xl
-                      px-3 py-1.5 sm:px-4 sm:py-2
-                      font-bold text-sm sm:text-base
-                      ${isMe ? "rounded-br-none ml-auto" : "rounded-bl-none mr-auto"}
-                    `}
-                    style={{
-                      background: isMe ? "var(--sent)" : "var(--received)"
-                    }}
-                  >
-                    {msg.text}
-                  </div>
-                )}
-                
-                <p className={`text-[10px] sm:text-xs font-bold mt-1 ${isMe ? "text-right" : "text-left"}`}>{formatMessageTime(msg.createdAt)}</p>
+                <button
+                  onClick={() => setDeletingMsgId(null)}
+                  className="text-sm font-bold hover:bg-gray-100 p-2 text-left rounded text-gray-500"
+                >
+                  Cancel
+                </button>
               </div>
-            </React.Fragment>
-          );
-        })}
-        <div ref={scrollEnd} />
-      </div>
+            )}
+
+          {msg.isDeletedForEveryone ? (
+            <div
+              className={`
+                max-w-[85%] sm:max-w-[70%]
+                break-words overflow-hidden
+                border-2 sm:border-4 border-black
+                rounded-2xl sm:rounded-3xl
+                px-3 py-1.5 sm:px-4 sm:py-2
+                font-bold text-sm sm:text-base
+                italic text-gray-500 bg-gray-100
+                ${isMe ? "rounded-br-none" : "rounded-bl-none"}
+              `}
+            >
+              🚫 This message was deleted
+            </div>
+          ) : msg.image ? (
+            <img
+              src={
+                msg.image ||
+                `https://api.dicebear.com/9.x/initials/svg?seed=Image`
+              }
+              className="
+                max-w-[85%] sm:max-w-[220px]
+                h-auto object-cover
+                rounded-xl border-2 sm:border-4 border-black
+              "
+            />
+          ) : (
+            <div
+              className={`
+                max-w-[85%] sm:max-w-[70%]
+                break-words overflow-hidden
+                border-2 sm:border-4 border-black
+                rounded-2xl sm:rounded-3xl
+                px-3 py-1.5 sm:px-4 sm:py-2
+                font-bold text-sm sm:text-base
+                ${isMe ? "rounded-br-none" : "rounded-bl-none"}
+              `}
+              style={{
+                background: isMe
+                  ? "var(--sent)"
+                  : "var(--received)",
+              }}
+            >
+              {msg.text}
+            </div>
+          )}
+
+          <p
+            className={`
+              text-[10px] sm:text-xs font-bold mt-1
+              ${isMe ? "text-right" : "text-left"}
+            `}
+          >
+            {formatMessageTime(msg.createdAt)}
+          </p>
+        </div>
+      </React.Fragment>
+    );
+  })}
+
+  <div ref={scrollEnd} />
+</div>
 
       {/* INPUT */}
       {!isFriend && (

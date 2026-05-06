@@ -123,6 +123,7 @@ export const VideoCallProvider = ({ children }) => {
 
   const startCall = async (user) => {
     try {
+      console.log("startCall called with user:", user);
       if (!window.isSecureContext && window.location.hostname !== 'localhost') {
         toast.error("Video calls require HTTPS for camera/mic access.");
         return;
@@ -132,14 +133,17 @@ export const VideoCallProvider = ({ children }) => {
       setOtherUser(user);
 
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      console.log("Got local stream:", stream);
       setLocalStream(stream);
 
       const pc = createPeerConnection(user._id);
       stream.getTracks().forEach(track => pc.addTrack(track, stream));
 
       const offer = await pc.createOffer();
+      console.log("Created offer:", offer);
       await pc.setLocalDescription(offer);
 
+      console.log("Emitting 'call-user' to:", user._id);
       socket.emit('call-user', { 
         to: user._id, 
         offer,

@@ -110,45 +110,60 @@ io.on("connection", (socket) => {
 
   // WebRTC Signaling
   socket.on("call-user", ({ to, offer, callerInfo }) => {
+    console.log("Server received 'call-user' from:", userId, "to:", to);
     const toSocketIds = userSocketMap[to];
+    console.log("toSocketIds:", toSocketIds);
     if (toSocketIds) {
       toSocketIds.forEach(socketId => {
+        console.log("Emitting 'incoming-call' to socket:", socketId);
         socket.to(socketId).emit("incoming-call", { from: userId, offer, callerInfo });
       });
     }
   });
 
   socket.on("answer-call", ({ to, answer }) => {
+    console.log("Server received 'answer-call' from:", userId, "to:", to);
     const toSocketIds = userSocketMap[to];
+    console.log("toSocketIds:", toSocketIds);
     if (toSocketIds) {
       toSocketIds.forEach(socketId => {
+        console.log("Emitting 'call-accepted' to socket:", socketId);
         socket.to(socketId).emit("call-accepted", { from: userId, answer });
       });
     }
   });
 
   socket.on("ice-candidate", ({ to, candidate }) => {
+    console.log("Server received 'ice-candidate' from:", userId, "to:", to);
     const toSocketIds = userSocketMap[to];
+    console.log("toSocketIds:", toSocketIds);
     if (toSocketIds) {
       toSocketIds.forEach(socketId => {
+        console.log("Emitting 'ice-candidate' to socket:", socketId);
         socket.to(socketId).emit("ice-candidate", { from: userId, candidate });
       });
     }
   });
 
   socket.on("reject-call", ({ to }) => {
+    console.log("Server received 'reject-call' from:", userId, "to:", to);
     const toSocketIds = userSocketMap[to];
+    console.log("toSocketIds:", toSocketIds);
     if (toSocketIds) {
       toSocketIds.forEach(socketId => {
+        console.log("Emitting 'call-rejected' to socket:", socketId);
         socket.to(socketId).emit("call-rejected", { from: userId });
       });
     }
   });
 
   socket.on("end-call", ({ to }) => {
+    console.log("Server received 'end-call' from:", userId, "to:", to);
     const toSocketIds = userSocketMap[to];
+    console.log("toSocketIds:", toSocketIds);
     if (toSocketIds) {
       toSocketIds.forEach(socketId => {
+        console.log("Emitting 'call-ended' to socket:", socketId);
         socket.to(socketId).emit("call-ended", { from: userId });
       });
     }

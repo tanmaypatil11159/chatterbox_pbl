@@ -26,8 +26,8 @@ function HomePage() {
       <div
         className={`h-full grid box-border transition-all duration-300
           grid-cols-1
-          ${!selectedUser ? "md:grid-cols-2" : "md:grid-cols-[280px_1fr]"}
-          ${selectedUser && isRightSidebarOpen ? "xl:grid-cols-[280px_1fr_300px]" : ""}
+          ${!selectedUser ? "md:grid-cols-2" : "md:grid-cols-[1fr_2fr]"}
+          ${selectedUser && isRightSidebarOpen ? "xl:grid-cols-[1fr_2fr_300px]" : ""}
         `}
         >
         

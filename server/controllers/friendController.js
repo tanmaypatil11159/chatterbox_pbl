@@ -51,10 +51,12 @@ export const sendFriendRequest = async (req, res) => {
     });
 
     // Emit socket event for new notification
-    const receiverSocketId = globalThis.userSocketMap && globalThis.userSocketMap[receiverId];
-    if (receiverSocketId && globalThis.io) {
+    const receiverSocketIds = globalThis.userSocketMap && globalThis.userSocketMap[receiverId];
+    if (receiverSocketIds && globalThis.io) {
       const populatedNotification = await Notification.findById(notification._id).populate("sender","fullName profilePic");
-      globalThis.io.to(receiverSocketId).emit("newNotification", populatedNotification);
+      receiverSocketIds.forEach(socketId => {
+        globalThis.io.to(socketId).emit("newNotification", populatedNotification);
+      });
     }
 
     res.status(200).json({ success: true, message: "Friend request sent" });
@@ -227,10 +229,12 @@ export const consumeQrToken = async (req, res) => {
     });
 
     // Emit socket event to owner
-    const ownerSocketId = globalThis.userSocketMap && globalThis.userSocketMap[owner._id];
-    if (ownerSocketId && globalThis.io) {
+    const ownerSocketIds = globalThis.userSocketMap && globalThis.userSocketMap[owner._id];
+    if (ownerSocketIds && globalThis.io) {
       const populatedNotification = await Notification.findById(notification._id).populate("sender", "fullName profilePic");
-      globalThis.io.to(ownerSocketId).emit("newNotification", populatedNotification);
+      ownerSocketIds.forEach(socketId => {
+        globalThis.io.to(socketId).emit("newNotification", populatedNotification);
+      });
     }
 
     record.used = true;

@@ -56,15 +56,20 @@ export const VideoCallProvider = ({ children }) => {
     });
 
     socket.on('call-accepted', async ({ answer }) => {
+      console.log("Received 'call-accepted' event with answer:", answer);
       try {
         if (peerConnection.current) {
+          console.log("Setting remote description (answer)...");
           await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
+          console.log("Remote description set successfully!");
           setInCall(true);
           setIsCalling(false);
 
           // Add any pending ICE candidates
+          console.log("Adding pending ICE candidates:", pendingCandidates.current.length);
           while (pendingCandidates.current.length > 0) {
             const candidate = pendingCandidates.current.shift();
+            console.log("Adding pending ICE candidate:", candidate);
             await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
           }
         }
@@ -74,10 +79,13 @@ export const VideoCallProvider = ({ children }) => {
     });
 
     socket.on('ice-candidate', async ({ candidate }) => {
+      console.log("Received 'ice-candidate' event:", candidate);
       try {
         if (peerConnection.current && peerConnection.current.remoteDescription) {
+          console.log("Adding ICE candidate to peer connection:", candidate);
           await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
         } else {
+          console.log("Adding ICE candidate to pending queue:", candidate);
           pendingCandidates.current.push(candidate);
         }
       } catch (err) {
@@ -105,16 +113,36 @@ export const VideoCallProvider = ({ children }) => {
   }, [socket]);
 
   const createPeerConnection = (targetUserId) => {
+    console.log("Creating peer connection for user:", targetUserId);
     const pc = new RTCPeerConnection(iceServers);
 
     pc.onicecandidate = (event) => {
+      console.log("ICE candidate event:", event.candidate);
       if (event.candidate && socket) {
+        console.log("Emitting ICE candidate to:", targetUserId);
         socket.emit('ice-candidate', { to: targetUserId, candidate: event.candidate });
       }
     };
 
     pc.ontrack = (event) => {
-      setRemoteStream(event.streams[0]);
+      console.log("ontrack event received!", event);
+      console.log("event.streams:", event.streams);
+      if (event.streams && event.streams[0]) {
+        console.log("Setting remote stream:", event.streams[0]);
+        setRemoteStream(event.streams[0]);
+      }
+    };
+
+    pc.onconnectionstatechange = () => {
+      console.log("Peer connection state changed:", pc.connectionState);
+    };
+
+    pc.oniceconnectionstatechange = () => {
+      console.log("ICE connection state changed:", pc.iceConnectionState);
+    };
+
+    pc.onsignalingstatechange = () => {
+      console.log("Signaling state changed:", pc.signalingState);
     };
 
     peerConnection.current = pc;
@@ -137,11 +165,16 @@ export const VideoCallProvider = ({ children }) => {
       setLocalStream(stream);
 
       const pc = createPeerConnection(user._id);
-      stream.getTracks().forEach(track => pc.addTrack(track, stream));
+      console.log("Adding local tracks to peer connection in startCall...");
+      stream.getTracks().forEach(track => {
+        console.log("Adding track in startCall:", track.kind, track);
+        pc.addTrack(track, stream);
+      });
 
       const offer = await pc.createOffer();
       console.log("Created offer:", offer);
       await pc.setLocalDescription(offer);
+      console.log("Local description (offer) set successfully!");
 
       console.log("Emitting 'call-user' to:", user._id);
       socket.emit('call-user', { 
@@ -170,6 +203,7 @@ export const VideoCallProvider = ({ children }) => {
 
   const acceptCall = async () => {
     try {
+      console.log("acceptCall called, incomingCall:", incomingCall);
       if (!incomingCall) return;
       
       if (!window.isSecureContext && window.location.hostname !== 'localhost') {
@@ -182,25 +216,37 @@ export const VideoCallProvider = ({ children }) => {
       const targetUserId = incomingCall.from;
       // otherUser is already set in the incoming-call listener
       
+      console.log("Getting local media stream...");
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      console.log("Got local stream for acceptCall:", stream);
       setLocalStream(stream);
 
       const pc = createPeerConnection(targetUserId);
-      stream.getTracks().forEach(track => pc.addTrack(track, stream));
+      console.log("Adding local tracks to peer connection...");
+      stream.getTracks().forEach(track => {
+        console.log("Adding track:", track.kind, track);
+        pc.addTrack(track, stream);
+      });
 
       console.log("Setting remote description (offer)...");
       await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.offer));
+      console.log("Remote description (offer) set successfully!");
       
       console.log("Creating answer...");
       const answer = await pc.createAnswer();
+      console.log("Created answer:", answer);
       await pc.setLocalDescription(answer);
+      console.log("Local description (answer) set successfully!");
 
       // Add any pending ICE candidates that arrived before remote description
+      console.log("Adding pending ICE candidates in acceptCall:", pendingCandidates.current.length);
       while (pendingCandidates.current.length > 0) {
         const candidate = pendingCandidates.current.shift();
+        console.log("Adding pending ICE candidate in acceptCall:", candidate);
         await pc.addIceCandidate(new RTCIceCandidate(candidate));
       }
 
+      console.log("Emitting 'answer-call' to:", targetUserId);
       socket.emit('answer-call', { to: targetUserId, answer });
       setInCall(true);
       setIncomingCall(null);

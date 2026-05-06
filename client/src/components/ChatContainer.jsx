@@ -91,10 +91,10 @@ function ChatContainer({ onOpenLeft }) {
   }
 
   return (
-    <div className="cartoon-panel_3 border-l-0 flex flex-col h-full relative overflow-hidden bg-white">
+    <div className="cartoon-panel_3 border-l-0 flex flex-col h-full w-full min-w-0 relative overflow-hidden overflow-x-hidden bg-white">
 
       {/* HEADER */}
-      <div className="flex items-center gap-2 sm:gap-3 border-b-4 border-black p-3 sm:p-4 relative bg-[var(--header)]">
+      <div className="flex items-center gap-2 sm:gap-3 border-b-4 border-black p-3 sm:p-4 relative bg-[var(--header)] min-w-0 w-full">
 
        <button
   type="button"
@@ -198,7 +198,7 @@ function ChatContainer({ onOpenLeft }) {
       </div>
 
       {/* MESSAGES */}
-      <div className="flex-1 overflow-y-scroll px-4 py-4 flex flex-col gap-4 messages-area">
+      <div className="flex-1 overflow-y-scroll overflow-x-hidden px-4 pt-2 pb-4 flex flex-col gap-4 messages-area w-full min-w-0">
         {messages?.map((msg, index) => {
           const isMe = String(msg.senderId?._id || msg.senderId) === String(authUser?._id);
 
@@ -210,13 +210,13 @@ function ChatContainer({ onOpenLeft }) {
           return (
             <React.Fragment key={msg._id || `${msg.senderId}-${msg.createdAt}`}>
               {showDateSeparator && (
-                <div className="flex items-center justify-center my-4">
+                <div className="flex items-center justify-center my-4 w-full min-w-0">
                   <div className="bg-gray-200 border-2 border-black rounded-full px-4 py-1 text-xs font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                     {new Date(msg.createdAt).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                   </div>
                 </div>
               )}
-              <div className={`max-w-[85%] sm:max-w-[70%] ${isMe ? "ml-auto items-end" : "mr-auto items-start"} flex flex-col group relative`}>
+              <div className={`max-w-[85%] sm:max-w-[70%] w-full ${isMe ? "ml-auto items-end" : "mr-auto items-start"} flex flex-col group relative min-w-0`}>
                 
                 {/* TRASH CAN APPLIES TO ALL MESSAGES NOW */}
                 {!msg.isDeletedForEveryone && (
@@ -246,12 +246,13 @@ function ChatContainer({ onOpenLeft }) {
                        px-3 py-1.5 sm:px-4 sm:py-2
                        font-bold text-sm sm:text-base italic text-gray-500
                        ${isMe ? "rounded-br-none ml-auto bg-gray-100" : "rounded-bl-none mr-auto bg-gray-100"}
+                       break-words min-w-0 w-full
                      `}
                    >
                      🚫 This message was deleted
                    </div>
                 ) : msg.image ? (
-                  <img src={msg.image || `https://api.dicebear.com/9.x/initials/svg?seed=Image&backgroundColor=8B5CF6,4F46E5,EC4899,10B981,F59E0B`} className="max-w-full sm:max-w-[220px] rounded-xl border-2 sm:border-4 border-black" />
+                  <img src={msg.image || `https://api.dicebear.com/9.x/initials/svg?seed=Image&backgroundColor=8B5CF6,4F46E5,EC4899,10B981,F59E0B`} className="max-w-full sm:max-w-[220px] rounded-xl border-2 sm:border-4 border-black break-words min-w-0" />
                 ) : (
                   <div
                     className={`
@@ -260,6 +261,7 @@ function ChatContainer({ onOpenLeft }) {
                       px-3 py-1.5 sm:px-4 sm:py-2
                       font-bold text-sm sm:text-base
                       ${isMe ? "rounded-br-none ml-auto" : "rounded-bl-none mr-auto"}
+                      break-words min-w-0 w-full
                     `}
                     style={{
                       background: isMe ? "var(--sent)" : "var(--received)"
@@ -290,7 +292,7 @@ function ChatContainer({ onOpenLeft }) {
           sendMessage({ text: input });
           setInput("");
         }}
-        className="border-t-4 border-black p-2 sm:p-3 flex gap-2 items-center"
+        className="border-t-4 border-black p-2 sm:p-3 flex gap-2 items-center w-full min-w-0"
       >
         <label
           htmlFor="imageUpload"

@@ -76,13 +76,13 @@ function Dashboard() {
       title: "Rooms",
       value: dbStats.activeRooms,
       icon: <Home size={26} />,
-      color: "bg-[var(--accent)]"
+      color: "bg-[var(--primary)]"
     },
     {
       title: "Users",
       value: dbStats.totalUsers,
       icon: <Users size={26} />,
-      color: "bg-[var(--primary)]"
+      color: "bg-[var(--accent)]"
     },
     {
       title: "Messages",
@@ -175,48 +175,7 @@ function Dashboard() {
 
       <div className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-        {/* ACTIVITY GRAPH */}
 
-        <div className="
-  bg-[var(--surface)]
-  border-2 sm:border-4 border-[var(--text-primary)]
-  rounded-2xl sm:rounded-3xl
-  p-4 sm:p-6
-  ">
-
-          <h2 className="text-lg sm:text-xl font-black mb-4 flex items-center gap-2 text-[var(--text-primary)]">
-
-            <Activity size={20} />
-            Activity Time
-
-          </h2>
-
-          <div className="h-[200px] sm:h-[250px] w-full">
-            <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
-
-              <LineChart data={dbStats.activityData}>
-
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-
-                <XAxis dataKey="time" stroke="var(--text-primary)" fontSize={12} interval={3} />
-                <YAxis stroke="var(--text-primary)" fontSize={12} allowDecimals={false} />
-
-                <Tooltip contentStyle={{ backgroundColor: "var(--surface)", borderColor: "var(--text-primary)" }} itemStyle={{ color: "var(--text-primary)" }} />
-
-                <Line
-                  type="monotone"
-                  dataKey="active"
-                  stroke="var(--primary)"
-                  strokeWidth={4}
-                  dot={{ r: 4, strokeWidth: 2, fill: "var(--surface)" }}
-                />
-
-              </LineChart>
-
-            </ResponsiveContainer>
-          </div>
-
-        </div>
 
         {/* RECENT ACTIVITY */}
 

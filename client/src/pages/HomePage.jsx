@@ -84,7 +84,7 @@ function HomePage() {
             flex-col
           "
         >
-          <RightSidebar />
+          <RightSidebar open={isRightSidebarOpen} user={selectedUser} onClose={() => setIsRightSidebarOpen(false)} />
         </div>
       )}
 

@@ -54,8 +54,7 @@ function LoginPage() {
               {mode === "login" ? "Login" : "Sign Up"}
               
             </h1>
-<h2 className="text-center text-3xl sm:text-base font-bold text-red-500 mb-6">App under Testing !
-  </h2>
+
             {/* Username/Bio input — only on register */}
             {mode === "sign-up" && (
               <div className="flex flex-col gap-4">

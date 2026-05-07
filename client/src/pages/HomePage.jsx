@@ -11,14 +11,12 @@ function HomePage() {
     setSelectedUser,
   } = useContext(ChatContext);
 
-  const [showMobileLeft, setShowMobileLeft] = useState(false);
   const [showMobileRight, setShowMobileRight] = useState(false);
 
   // Close sidebars on ESC key
   useEffect(() => {
     const handleEsc = (event) => {
       if (event.key === "Escape") {
-        setShowMobileLeft(false);
         setShowMobileRight(false);
       }
     };
@@ -31,54 +29,39 @@ function HomePage() {
   }, []);
 
   return (
-    <div className="h-full w-full overflow-hidden relative bg-[var(--bg)] text-[var(--text)]">
-      
-      {/* MAIN LAYOUT */}
+    <div className="h-full w-full flex overflow-hidden bg-[var(--bg)] text-[var(--text)]">
+
+      {/* LEFT SIDEBAR */}
       <div
         className={`
-          h-full w-full min-w-0
-          grid overflow-hidden
-          transition-all duration-300
-          grid-cols-1
-
           ${
-            !selectedUser
-              ? "md:grid-cols-[320px_minmax(0,1fr)]"
-              : "md:grid-cols-[320px_minmax(0,1fr)]"
+            selectedUser ? "hidden md:flex" : "flex"
           }
-
-          ${
-            selectedUser && isRightSidebarOpen
-              ? "xl:grid-cols-[320px_minmax(0,1fr)_300px]"
-              : ""
-          }
+          w-full md:w-[320px]
+          shrink-0
+          h-full
+          border-r border-[var(--border)]
+          overflow-hidden
+          flex-col
         `}
       >
+        <Sidebar />
+      </div>
 
-        {/* LEFT SIDEBAR */}
+      {/* CHAT AREA */}
+      <div className="flex-1 min-w-0 h-full flex overflow-hidden">
         <div
           className={`
-            ${selectedUser ? "hidden md:flex" : "flex"}
-            min-w-0 overflow-hidden
-            flex-col border-r border-[var(--border)]
-          `}
-        >
-          <Sidebar />
-        </div>
-
-        {/* CHAT AREA */}
-        <div
-          className={`
-            ${selectedUser ? "flex" : "hidden md:flex"}
-            min-w-0 overflow-hidden
-            flex-col relative
+            ${
+              selectedUser ? "flex" : "hidden md:flex"
+            }
+            flex-1 min-w-0 h-full overflow-hidden flex-col
           `}
         >
           <ChatContainer
             onOpenLeft={() => setSelectedUser(null)}
             onOpenRight={() => {
               setShowMobileRight(true);
-              setShowMobileLeft(false);
             }}
           />
         </div>
@@ -88,8 +71,12 @@ function HomePage() {
           <div
             className="
               hidden xl:flex
-              min-w-0 overflow-hidden
-              flex-col border-l border-[var(--border)]
+              w-[300px]
+              shrink-0
+              h-full
+              border-l border-[var(--border)]
+              overflow-hidden
+              flex-col
             "
           >
             <RightSidebar />
@@ -105,7 +92,7 @@ function HomePage() {
           w-[85%] max-w-[320px]
           bg-[var(--surface)]
           shadow-2xl
-          transform transition-all duration-300 ease-in-out
+          transform transition-transform duration-300 ease-in-out
           xl:hidden
           ${
             showMobileRight
@@ -123,21 +110,15 @@ function HomePage() {
       </div>
 
       {/* OVERLAY */}
-      {(showMobileLeft || showMobileRight) && (
+      {showMobileRight && (
         <div
           className="
             fixed inset-0
             z-[55]
             bg-black/60
             backdrop-blur-sm
-            transition-opacity duration-300
           "
-          role="presentation"
-          aria-hidden="true"
-          onClick={() => {
-            setShowMobileLeft(false);
-            setShowMobileRight(false);
-          }}
+          onClick={() => setShowMobileRight(false)}
         />
       )}
     </div>

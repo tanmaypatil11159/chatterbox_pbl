@@ -91,7 +91,7 @@ function ChatContainer({ onOpenLeft }) {
   }
 
   return (
-    <div className="cartoon-panel_3 border-l-0 flex flex-col h-full relative overflow-hidden bg-white">
+   <div className="cartoon-panel_3 border-l-0 flex flex-col flex-1 w-full min-w-0 h-full relative overflow-hidden bg-white">
 
       {/* HEADER */}
       <div className="flex items-center gap-2 sm:gap-3 border-b-4 border-black p-3 sm:p-4 relative bg-[var(--header)]">

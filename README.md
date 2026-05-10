@@ -2,6 +2,9 @@
 
 ChatterBox is a fully responsive, feature-rich real-time messaging application with a playful "cartoon-wizard" aesthetic. Built with the MERN stack (MongoDB, Express, React, Node.js) and enhanced with Socket.io for instantaneous interactions, it offers a seamless experience across mobile, tablet, and desktop devices.
 
+#Deployed Link
+https://chatterbox-pbl-2.vercel.app/
+
 ## 🚀 Key Features
 
 - **Real-Time Messaging**: Instant private and group chat powered by Socket.io.

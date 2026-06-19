@@ -1,11 +1,11 @@
-# 🧙‍♂️ ChatterBox : Real-Time Communication Platform
+#  ChatterBox : Real-Time Communication Platform
 
 ChatterBox is a fully responsive, feature-rich real-time messaging application with a playful "cartoon-wizard" aesthetic. Built with the MERN stack (MongoDB, Express, React, Node.js) and enhanced with Socket.io for instantaneous interactions, it offers a seamless experience across mobile, tablet, and desktop devices.
 
 #Deployed Link
 https://chatterbox-pbl-2.vercel.app/
 
-## 🚀 Key Features
+##  Key Features
 
 - **Real-Time Messaging**: Instant private and group chat powered by Socket.io.
 - **Dynamic Rooms**: Create temporary or permanent chat rooms with expiry times, member limits, and password protection.
@@ -17,7 +17,7 @@ https://chatterbox-pbl-2.vercel.app/
 - **Theme Support**: Choose from multiple pre-defined themes with dynamic UI updates.
 - **AI-Powered Summaries**: Get quick summaries of long chat room conversations.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 ### **Frontend**
 - **React 19 (Vite)**: Fast and efficient UI rendering.
@@ -38,28 +38,8 @@ https://chatterbox-pbl-2.vercel.app/
 
 ---
 
-## 📂 Project Structure
 
-```text
-chatapp/
-├── client/                 # Frontend (React + Vite)
-│   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   ├── context/        # Global state (Auth, Chat, Room, etc.)
-│   │   ├── pages/          # Main application views
-│   │   ├── store/          # Theme and UI state (Zustand)
-│   │   └── assets/         # Images, animations, and icons
-├── server/                 # Backend (Node.js + Express)
-│   ├── controllers/        # API business logic
-│   ├── models/             # Database schemas
-│   ├── routes/             # API endpoint definitions
-│   ├── middleware/         # Auth and validation
-│   └── lib/                # Database and utility helpers
-```
-
----
-
-## ⚙️ Installation & Setup
+##  Installation & Setup
 
 ### **Prerequisites**
 - Node.js (v18+)
@@ -107,7 +87,7 @@ npm run dev
 
 ---
 
-## 📱 Responsive Implementation
+##  Responsive Implementation
 
 The application uses a mobile-first approach with the following breakpoints:
 - **Mobile (320px - 480px)**: Collapsible sidebar (hamburger), single-column dashboard, full-width chat bubbles.
@@ -116,7 +96,7 @@ The application uses a mobile-first approach with the following breakpoints:
 
 ---
 
-## 🔒 Security
+##  Security
 
 - **JWT Authentication**: Secure access to protected routes.
 - **Password Hashing**: BcryptJS for sensitive data protection.
@@ -125,5 +105,5 @@ The application uses a mobile-first approach with the following breakpoints:
 
 ---
 
-## 📄 License
+##  License
 Distributed under the ISC License.
